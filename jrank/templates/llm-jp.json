@@ -1,0 +1,8 @@
+{
+    "name": "llm-jp",
+    "system_message": "",
+    "roles": ["", "### 回答："],
+    "offset": 0,
+    "sep_style": "NO_COLON_SINGLE",
+    "sep": ""
+}
