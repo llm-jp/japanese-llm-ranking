@@ -42,6 +42,10 @@ python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pair
 
 ### LLM-JP
 
+> [!CAUTION]
+> 以下の llm-jp-13b-full-all と llm-jp-13b-lora-all の評価結果は既に jrank/data/rakuda_v2/model_judgment/gpt-4_pair.jsonl に記載してあります。
+> win rate を計算したい場合、readme 下部にその方法を記載しています。
+
 最初に `jrank/gen_model_answer.py` を使用して LLM の出力を生成してください。
 
 ```bash
