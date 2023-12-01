@@ -11,6 +11,13 @@ This repository supports YuzuAI's [Rakuda leaderboard](https://yuzuai.jp/benchma
 
 ## Usage
 
+At first, need install python libraries.
+
+```bash
+$ pip install -r requirements.txt
+$ cd jrank
+```
+
 Rakuda follows the same API as LLM Judge. First start with a question list you wish to compare the models on. These questions can be multi-turn. The default Rakuda question list is `jrank/data/rakuda_v2/questions.jsonl` ([HF](https://huggingface.co/datasets/yuzuai/rakuda-questions)).
 
 Then generate model answers to these questions using `jrank/gen_model_answer.py`:
@@ -32,4 +39,56 @@ The mode option determines what kind of judgements are performed. The default fo
 Finally, fit a Bradley-Terry model to these judgements to create a model ranking.
 ```bash
 python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct
+```
+
+### LLM-JP
+
+First, generate model answers using `jrank/gen_model_answer.py`:
+
+```bash
+$ python3 gen_model_answer.py \
+  --bench_name rakuda_v2 \
+  --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 \
+  --model-id llm-jp-13b-full-all \
+  --conv_template ./templates/llm-jp.json \
+  --temperature 0.7 \
+  --top_p 0.95
+```
+
+If you would like to use a LoRA model, you need to download the adapter and rename folder:
+
+```bash
+# https://huggingface.co/llm-jp/llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0
+$ git lfs install
+$ git clone https://huggingface.co/llm-jp/llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0
+# Include "peft" in the folder name.
+$ mv -f llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0 llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0-peft
+$ python3 gen_model_answer.py \
+  --bench_name rakuda_v2 \
+  --model-path /path/to/llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0-peft \
+  --model-id llm-jp-13b-lora-all \
+  --conv_template ./templates/llm-jp.json \
+  --temperature 0.7 \
+  --top_p 0.95
+```
+
+Second, generate judgments using `jrank/gen_judgment.py`.
+
+```bash
+# Pairwise evaluation for llm-jp-13b-full-all and llm-jp-13b-lora-all.
+$ python3 gen_judgment.py \
+  --bench_name rakuda_v2 \
+  --model-list llm-jp-13b-full-all llm-jp-13b-lora-all \
+  --parallel 1 \
+  --mode pairwise-n \
+  --judge-model gpt-4 \
+  --n 2000  # This would mean a maximum of 2,000 requests. For a pairwised evaluation of 2 models, that would be 80 cases.
+```
+
+Finally, generate win-rate using `jrank/gen_winrate.py`.
+
+```bash
+$ python3 gen_winrate.py \
+  --model_a llm-jp-13b-full-all \
+  --model_b llm-jp-13b-lora-all
 ```

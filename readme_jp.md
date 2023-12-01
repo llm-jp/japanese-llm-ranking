@@ -11,6 +11,13 @@ LMSYS' [LLM Judge](https://github.com/lm-sys/FastChat/tree/main/fastchat/llm_jud
 
 ## 利用方法
 
+最初に下記の操作で Python ライブラリをインストールしてください。
+
+```bash
+$ pip install -r requirements.txt
+$ cd jrank
+```
+
 RakudaはLLM Judgeと同様に同じAPIを使用しています。始めに、モデル同士を比較させたい質問リストを用意します。質問は マルチターンでも可能です。Rakudaにおいて、defaultで使用している質問リストは`jrank/data/rakuda_v2/questions.jsonl` ([HF](https://huggingface.co/datasets/yuzuai/rakuda-questions))から確認することができます。
 これらの質問に対して、`jrank/gen_model_answer.py`を実行することでモデルによる返答を生成します：
 
@@ -31,4 +38,54 @@ Mode optionがどのような判定を行うかを決定します。Rakudaでは
 
 ```bash
 python make_ranking.py --bench-name rakuda_v2 --judge-model claude-2 --mode pairwise --compute mle --make-charts --bootstrap-n 500 --plot-skip-list rinna-3.6b-sft super-trin elyza-7b-instruct
+```
+
+### LLM-JP
+
+最初に `jrank/gen_model_answer.py` を使用して LLM の出力を生成してください。
+
+```bash
+$ python3 gen_model_answer.py \
+  --bench_name rakuda_v2 \
+  --model-path llm-jp/llm-jp-13b-instruct-full-jaster-dolly-oasst-v1.0 \
+  --model-id llm-jp-13b-full-all \
+  --conv_template ./templates/llm-jp.json \
+  --temperature 0.7 \
+  --top_p 0.95
+```
+
+LoRA モデルの出力を得る場合、ローカルに adapter をダウンロードし、フォルダ名を変更する必要があります。
+
+```bash
+$ git lfs install
+$ git clone https://huggingface.co/llm-jp/llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0
+# フォルダ名に "peft" を含む必要があります
+$ mv -f llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0 llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0-peft
+$ python3 gen_model_answer.py \
+  --bench_name rakuda_v2 \
+  --model-path /path/to/llm-jp-13b-instruct-lora-jaster-dolly-oasst-v1.0-peft \
+  --model-id llm-jp-13b-peft-all \
+  --conv_template ./templates/llm-jp.json \
+  --temperature 0.7 \
+  --top_p 0.95
+```
+
+次に、`jrank/gen_judgment.py` を利用して評価を作成してください。
+
+```bash
+$ python3 gen_judgment.py \
+  --bench_name rakuda_v2 \
+  --model-list llm-jp-13b-full-all llm-jp-13b-lora-all \
+  --parallel 1 \
+  --mode pairwise-n \
+  --judge-model gpt-4 \
+  --n 2000  # これは最大で2,000リクエストまで行うことを意味しています。今回の場合は2*40で80リクエストになります。
+```
+
+最後に `jrank/gen_winrate.py` で win-rate を求めます。
+
+```bash
+$ python3 gen_winrate.py \
+  --model_a llm-jp-13b-full-all \
+  --model_b llm-jp-13b-lora-all
 ```
