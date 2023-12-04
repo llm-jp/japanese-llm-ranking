@@ -93,6 +93,7 @@ Finally, generate win-rate using `jrank/gen_winrate.py`.
 
 ```bash
 $ python3 gen_winrate.py \
+  --file_path data/rakuda_v2/model_judgment/gpt-4_pair.jsonl \
   --model_a llm-jp-13b-full-all \
   --model_b llm-jp-13b-lora-all
 ```
