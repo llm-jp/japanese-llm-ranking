@@ -86,7 +86,7 @@ $ python3 gen_judgment.py \
   --n 2000  # これは最大で2,000リクエストまで行うことを意味しています。今回の場合は2*40で80リクエストになります。
 ```
 
-最後に `jrank/gen_winrate.py` で win-rate を求めます。
+最後に `jrank/gen_winrate.py` で win rate を求めます。
 
 ```bash
 $ python3 gen_winrate.py \

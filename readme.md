@@ -89,7 +89,7 @@ $ python3 gen_judgment.py \
   --n 2000  # This would mean a maximum of 2,000 requests. For a pairwised evaluation of 2 models, that would be 80 cases.
 ```
 
-Finally, generate win-rate using `jrank/gen_winrate.py`.
+Finally, generate win rate using `jrank/gen_winrate.py`.
 
 ```bash
 $ python3 gen_winrate.py \
