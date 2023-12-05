@@ -141,25 +141,29 @@ def print_results(aggregated_results: AggregatedItem) -> None:
     print(f"# draw: {aggregated_results.n_draw}")
     print(f"# error: {aggregated_results.n_error}")
 
-    print("*"*100)
-    print("Win instance")
-    win_sample = random.choice(aggregated_results.model_a_win_instance)
-    print_instance(win_sample)
+    if aggregated_results.model_a_win_instance:
+        print("*"*100)
+        print("Win instance")
+        win_sample = random.choice(aggregated_results.model_a_win_instance)
+        print_instance(win_sample)
 
-    print("*"*100)
-    print("Lose instance")
-    lose_sample = random.choice(aggregated_results.model_b_win_instance)
-    print_instance(lose_sample)
+    if aggregated_results.model_b_win_instance:
+        print("*"*100)
+        print("Lose instance")
+        lose_sample = random.choice(aggregated_results.model_b_win_instance)
+        print_instance(lose_sample)
 
-    print("*"*100)
-    print("Draw instance")
-    draw_sample = random.choice(aggregated_results.draw_instance)
-    print_instance(draw_sample, need_reverse_judge=True)
+    if aggregated_results.draw_instance:
+        print("*"*100)
+        print("Draw instance")
+        draw_sample = random.choice(aggregated_results.draw_instance)
+        print_instance(draw_sample, need_reverse_judge=True)
 
-    print("*"*100)
-    print("Error instance")
-    error_sample = random.choice(aggregated_results.error_instance)
-    print_instance(error_sample, need_reverse_judge=True)
+    if aggregated_results.error_instance:
+        print("*"*100)
+        print("Error instance")
+        error_sample = random.choice(aggregated_results.error_instance)
+        print_instance(error_sample, need_reverse_judge=True)
 
 
 def main():
